@@ -51,7 +51,7 @@ git fetch origin 329c32b9... && git worktree add ../flask-329c32b9 329c32b9... &
 jobrepro run .github/workflows/tests.yaml:typing --until 5 --break-on-failure
 ```
 
-Running that command in the worktree reproduces the same mypy error as CI in about 6 seconds. `from-run` uses your logged-in `gh` CLI. It maps GitHub's job display names (`test (3.12, ubuntu-latest)`, `name: ${{ matrix.name }}`, include-only matrices) back to the job id and the smallest set of `--matrix` flags that pick out that combination.
+Running that command in the worktree reproduces the same mypy error as CI in a few seconds (about 6 s with a cold cache). `from-run` uses your logged-in `gh` CLI. It maps GitHub's job display names (`test (3.12, ubuntu-latest)`, `name: ${{ matrix.name }}`, include-only matrices) back to the job id and the smallest set of `--matrix` flags that pick out that combination.
 
 ### Debug one step
 

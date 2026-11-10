@@ -72,7 +72,7 @@ SCENES = [
         "tail": True,
         "cmds": ["jobrepro run .github/workflows/tests.yaml:typing --until 5"],
         "say": ("Running it executes the typing job's steps right here. Checkout and cache are skipped, setup steps are "
-                "checked against my local tools, and the tox step runs for real. In about six seconds I get the same "
+                "checked against my local tools, and the tox step runs for real. In a few seconds I get the same "
                 "my pie error that failed on GitHub, without pushing anything."),
     },
     {
@@ -209,11 +209,15 @@ class Term:
         for text, c, b in spans:
             while text:
                 room = self.cols - n
+                if room <= 4:
+                    lines.append(cur); cur, n = [], 0
+                    text = "    " + text.lstrip(" ")
+                    room = self.cols
                 if len(text) <= room:
                     cur.append((text, c, b)); n += len(text); text = ""
                 else:
                     cut = text.rfind(" ", 0, room + 1)
-                    cut = cut if cut > 0 else room
+                    cut = cut if cut > 4 else room
                     cur.append((text[:cut], c, b)); lines.append(cur); cur, n = [], 0
                     text = "    " + text[cut:].lstrip(" ")
         lines.append(cur)
