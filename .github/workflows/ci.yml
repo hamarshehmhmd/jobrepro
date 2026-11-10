@@ -9,8 +9,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python: ["3.9", "3.11", "3.12", "3.13"]
+        python: ["3.10", "3.11", "3.12", "3.13"]
         include:
+          - os: ubuntu-24.04   # Python 3.9 isn't available for ubuntu-latest (26.04)
+            python: "3.9"
           - os: macos-latest
             python: "3.13"
     steps:
