@@ -1,0 +1,12 @@
+name: greet
+description: A local composite action
+inputs:
+  who: {default: world}
+outputs:
+  msg: {value: "${{ steps.g.outputs.msg }}"}
+runs:
+  using: composite
+  steps:
+    - id: g
+      shell: bash
+      run: echo "msg=build ${{ inputs.who }}" >> "$GITHUB_OUTPUT"

@@ -1,0 +1,33 @@
+name: CI
+on: [push, pull_request]
+env:
+  APP: shop
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Version tag
+        id: meta
+        run: |
+          echo "tag=v1.4-py${{ matrix.python }}" >> "$GITHUB_OUTPUT"
+          echo "BUILD_DIR=$RUNNER_TEMP/build" >> "$GITHUB_ENV"
+      - name: Greet
+        id: greet
+        uses: ./.github/actions/greet
+        with:
+          who: ${{ steps.meta.outputs.tag }}
+      - name: Call the API
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+        run: echo "calling api.example.com with $API_TOKEN for ${{ steps.greet.outputs.msg }}"
+      - name: Run tests
+        run: |
+          test -f config.ini || { echo "::error file=config.ini::config.ini is missing"; exit 1; }
+          python -m unittest -q

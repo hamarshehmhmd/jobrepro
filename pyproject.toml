@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jobrepro"
+version = "0.1.0"
+description = "Run one GitHub Actions job, or one step, on your machine with the same env, expressions and matrix values, and drop into a shell when it fails. No push-and-wait."
+readme = "README.md"
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
+authors = [{name = "Mohammad Hamarsheh"}]
+requires-python = ">=3.9"
+dependencies = ["PyYAML>=5.4"]
+keywords = ["github-actions", "ci", "debugging", "workflow", "local", "act", "devops", "breakpoint"]
+classifiers = [
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Build Tools",
+  "Topic :: Software Development :: Testing",
+]
+
+[project.urls]
+Homepage = "https://github.com/hamarshehmhmd/jobrepro"
+Issues = "https://github.com/hamarshehmhmd/jobrepro/issues"
+
+[project.scripts]
+jobrepro = "jobrepro.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

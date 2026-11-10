@@ -1,0 +1,50 @@
+name: CI
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python: ["3.9", "3.11", "3.12", "3.13"]
+        include:
+          - os: macos-latest
+            python: "3.13"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install . pytest
+      - name: pytest (includes the docker container-mode test on Linux)
+        run: python -m pytest -q -rs
+
+  dogfood:
+    name: jobrepro runs this workflow's own job
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python -m pip install .
+      - run: jobrepro list --steps
+      - run: jobrepro plan ci.yml:test --matrix python=3.13
+      - name: run the test job's steps locally inside this runner
+        run: jobrepro run ci.yml:test --matrix python=3.13 --color always
+
+  install-script:
+    name: one-line install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: JOBREPRO_REF=${{ github.sha }} sh install.sh
+      - run: |
+          export PATH="$HOME/.local/bin:${PIPX_BIN_DIR:-/opt/pipx_bin}:$PATH"
+          jobrepro --version
+          cd "$(mktemp -d)" && git init -q && mkdir -p .github/workflows
+          printf 'on: push\njobs:\n  hi:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo "hello from $GITHUB_JOB"\n' > .github/workflows/ci.yml
+          jobrepro run hi | tee out.txt && grep -q "hello from hi" out.txt
